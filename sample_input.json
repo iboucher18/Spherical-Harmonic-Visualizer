@@ -1,0 +1,20 @@
+{
+  "spherical-harmonic-output-filepath": "sample_output.csv",
+  "do-fourier-transform": true,
+  "shapes": [
+    {
+        "shape": "Circle",
+        "radius": 1
+    },
+    {
+        "shape": "Square",
+        "length": 2
+    },
+    {
+        "shape": "Rectangle",
+        "length": 3,
+        "width": 4
+    }
+  ]
+  
+}
