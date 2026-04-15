@@ -1,17 +1,35 @@
 {
-  "spherical-harmonic-output-filepath": "sample_output.csv",
-  "do-fourier-transform": true,
+  "output-filepath": "sample_SH_output.csv",
+  "do-fourier": true,
+  "seed": 1234,
   "shapes": [
     {
-        "shape": "Circle",
+        "type": "Circle",
         "radius": 1
     },
     {
-        "shape": "Square",
-        "length": 2
+        "type": "Square",
+        "side_length": 3,
+        "x": 0,
+        "y": 0,
+        "z": 3.1
     },
     {
-        "shape": "Rectangle",
+        "type": "Square",
+        "side_length": 4,
+        "x": 3.1,
+        "y": 0,
+        "z": 0
+    },
+    {
+        "type": "Square",
+        "side_length": 4,
+        "x": 3.1,
+        "y": 2,
+        "z": 0
+    },
+    {
+        "type": "Rectangle",
         "length": 3,
         "width": 4
     }

@@ -1,52 +1,11 @@
 SHELL=/bin/sh
 
-# Note: Comments start with #.  $(FOOBAR) means: evaluate the variable 
-#        defined by FOOBAR= (something).
-
-# This file contains a set of rules used by the "make" command.
-#   This makefile $(MAKEFILE) tells "make" how the executable $(COMMAND) 
-#   should be create from the source files $(SRCS) and the header files 
-#   $(HDRS) via the object files $(OBJS); type the command:
-#        "make -f make_program"
-#   where make_program should be replaced by the name of the makefile.
-# 
-# Programmer:  Dick Furnstahl (furnstahl.1@osu.edu)
-# Latest revision: 12-Jan-2016 
-# 
-# Notes:
-#  * If you are ok with the default options for compiling and linking, you
-#     only need to change the entries in section 1.
-#
-#  * Defining BASE determines the name for the makefile (prepend "make_"), 
-#     executable (append ".x"), zip archive (append ".zip") and gzipped 
-#     tar file (append ".tar.gz"). 
-#
-#  * To remove the executable and object files, type the command:
-#          "make -f $(MAKEFILE) clean"
-#
-#  * To create a zip archive with name $(BASE).zip containing this 
-#     makefile and the SRCS and HDRS files, type the command:
-#        "make -f $(MAKEFILE) zip"
-#
-#  * To create a gzipped tar file with name $(BASE).tar.gz containing this 
-#     makefile and the source and header files, type the command:
-#          "make -f $(MAKEFILE) tarz"
-#
-#  * Continuation lines are indicated by \ with no space after it.  
-#     If you get a "missing separator" error, it is probably because there
-#     is a space after a \ somewhere.
-#
-
-###########################################################################
-# 1. Specify base name, source files, header files, input files
-########################################################################### 
-
 # The base for the names of the makefile, executable command, etc.
-BASE=  main
+BASE=  final_project
 
 # Put all C++ (or other) source files here.  NO SPACES after continuation \'s.
 SRCS= \
-main.cpp \
+final_project.cpp \
 SphericalHarmonicGenerator.cpp \
 FourierTransformCalculator.cpp
 
