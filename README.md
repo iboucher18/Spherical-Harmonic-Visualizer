@@ -37,12 +37,12 @@ OPTION 2: Run in 2 stages. Necessary when running using OSC
 
 3: run "python main_v2_part1.py"
 
-4: three files will be in your output directory. Pull these files down from OSC and place them in directory with your python environment
+4: Three files will be in your output directory. Pull these files down from OSC and place them in directory with your python environment. If you don't have a way to do this, you can use the download_folder.py script (edit the username, password, folder, remoteFolder, and localFolder fields to your OSC login information and desired filepaths). 
 - SphereData.csv
 - SphereData_postFourierTransform_real.csv
 - SphereData_postFourierTransform_imag.csv
 
-5: run 'python main_v2_part2.py PATH_TO_FOLDER_WITH_SPHERE_FILES'
+5: run 'python main_v2_part2.py PATH_TO_FOLDER_WITH_SPHERE_FILES true'
 
 Description
 **TODO**: describe when done

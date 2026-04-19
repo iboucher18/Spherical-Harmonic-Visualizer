@@ -1,9 +1,12 @@
+#pragma once
+
 #include <vector>
 #include <map>
-#include <SphereData.h>
-#include <SphericalHarmonicGenerator.h>
 
-double milnes_rule(
+#include "SphereData.h"
+#include "SphericalHarmonicGenerator.h"
+
+inline double milnes_rule(
    std::vector<double> values,
    double x_min, 
    double x_max) 
@@ -82,14 +85,14 @@ inline SphereData CalculateFourierTransformOfSphere(const SphereData& sphere, in
       for (const auto& phi : sphere.phi) {
         auto thetaPhi = std::make_pair(theta, phi);
 
-        if (fourierSphereData.values.find(thetaPhi) != fourierSphereData.values.end()) {
-          fourierSphereData.values[thetaPhi] += cn * sphericalHarmonicTimesF_real.at(thetaPhi);
+        if (fourierSphereData_real.values.find(thetaPhi) != fourierSphereData_real.values.end()) {
+          fourierSphereData_real.values[thetaPhi] += cn * sphericalHarmonicTimesF_real.at(thetaPhi);
         } else {
-          fourierSphereData.values.insert({thetaPhi, cn * sphericalHarmonicTimesF_real.at(thetaPhi)});
+          fourierSphereData_real.values.insert({thetaPhi, cn * sphericalHarmonicTimesF_real.at(thetaPhi)});
         }
       }
     }
   }
 
-  return fourierSphereData;
+  return fourierSphereData_real;
 }

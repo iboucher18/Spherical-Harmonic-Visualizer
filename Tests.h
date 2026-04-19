@@ -1,7 +1,10 @@
-#include <iostream>
-// TODO: include spherical harmonic calculator, when it exists
+#pragma once
 
-void ExecuteTests() {
+#include <iostream>
+
+#include "SphericalHarmonicGenerator.h"
+
+inline void ExecuteTests() {
   // ---------------------------------------------------------------
   // LEGENDRE POLYNOMAL TESTS
   // TEST ONE

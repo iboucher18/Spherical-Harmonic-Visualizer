@@ -18,7 +18,8 @@
 
 #include "Shapes.h"
 #include "Tests.cpp"
-#include "SphericalHarmonicGenerator.h"
+#include "FourierTransformCalculator.h"
+#include "SphereData.h"
 
 const inline double radius = 1.0;
 

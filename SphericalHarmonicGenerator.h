@@ -1,7 +1,12 @@
+#pragma once
+
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_sf_legendre.h>
 
-int Factorial(int x) {
+#include <utility>
+#include <cmath>
+
+inline int Factorial(int x) {
   return std::tgamma(x+1); // std::tgamma(x + 1) is equivalent to x!
 }
 

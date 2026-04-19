@@ -1,3 +1,5 @@
+#pragma once
+
 #include <map>
 #include <string>
 #include <vector>
@@ -16,18 +18,22 @@ enum class ShapeType {
   Rectangle
 };
 
-bool IsStringAShape(std::string str) {
+static inline const std::map<ShapeType, std::string> ShapeTypeToString({
+	{ShapeType::Circle, "circle"},
+	{ShapeType::Square, "square"},
+	{ShapeType::Rectangle, "rectangle"},
+});
+
+inline bool IsStringAShape(std::string str) {
   for (auto& [shape, shapeString] : ShapeTypeToString) {
     if (shapeString == str) {return true;}
   }
   return false;
 }
 
-static inline const std::map<ShapeType, std::string> ShapeTypeToString({
-	{ShapeType::Circle, "circle"},
-	{ShapeType::Square, "square"},
-	{ShapeType::Rectangle, "rectangle"},
-});
+
+
+
 
 class ShapeData {
 public:
