@@ -6,13 +6,14 @@ BASE=  final_project
 # Put all C++ (or other) source files here.  NO SPACES after continuation \'s.
 SRCS= \
 final_project.cpp \
-SphericalHarmonicGenerator.cpp \
-FourierTransformCalculator.cpp
+Tests.cpp
+
 
 # Put all header files here.  NO SPACES after continuation \'s.
 HDRS= \
 SphericalHarmonicGenerator.h \
-FourierTransformCalculator.h 
+FourierTransformCalculator.h \
+SphereData.h 
 
 # Put any input files you want to be saved in tarballs (e.g., sample files).
 INPFILE= \
