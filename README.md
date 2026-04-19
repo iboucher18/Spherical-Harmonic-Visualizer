@@ -44,6 +44,12 @@ How to setup and run
 
 5: run 'python main_v2_part2.py PATH_TO_FOLDER_WITH_SPHERE_FILES true' - this will run Part 4 in the Description (see below)
 
+## Additional Notes on Running
+
+The user is not intended to interact with the cpp executable when running the code normally: They should run one of the python scripts and modify the json input file to run it. Technically, the user can run it this way, however it involves a lot of runtime arguments that are a little unwieldy
+
+To run the tests, run "./final_project.x ExecuteTests".
+
 # Description:
 
 This program takes a set of user-defined shapes (either squares or rectangles), projects them onto a sphere, and plots it. Additionally, if the user sets the appropriate input, a fourier transform will be executed onto the resulting sphere, and both the real and imaginary components of that transform are saved and plotted (in addition to the original sphere's plot).
