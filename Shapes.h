@@ -13,13 +13,11 @@ struct Location {
 
 
 enum class ShapeType {
-  Circle,
   Square,
   Rectangle
 };
 
 static inline const std::map<ShapeType, std::string> ShapeTypeToString({
-	{ShapeType::Circle, "circle"},
 	{ShapeType::Square, "square"},
 	{ShapeType::Rectangle, "rectangle"},
 });
@@ -38,16 +36,6 @@ inline bool IsStringAShape(std::string str) {
 class ShapeData {
 public:
   virtual double test() {return -1;}; // TODO: remove if possible
-};
-
-class CircleData : public ShapeData {
-public:
-  CircleData(double _radius) 
-    : ShapeData()
-    , radius(_radius)
-  {}
-  
-  const double radius;
 };
 
 class SquareData : public ShapeData {

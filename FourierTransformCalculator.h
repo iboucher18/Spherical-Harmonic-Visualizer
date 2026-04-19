@@ -38,7 +38,7 @@ inline double milnes_rule(
 }
 
 
-inline SphereData CalculateFourierTransformOfSphere(const SphereData& sphere, int l) {
+inline std::pair<SphereData, SphereData> CalculateFourierTransformOfSphere(const SphereData& sphere, int l) {
   // Calculate m values
   auto m_values = std::vector<int>();
   for (int m = -1*l; m <= l; m++) {
@@ -74,25 +74,39 @@ inline SphereData CalculateFourierTransformOfSphere(const SphereData& sphere, in
     for (const auto& theta : sphere.theta) {
       auto valuesAtThisTheta = std::vector<double>();
       for (const auto& phi : sphere.phi) {
-        valuesAtThisTheta.emplace_back(sphere.values.at(std::make_pair(theta, phi)));
+        valuesAtThisTheta.emplace_back(sphericalHarmonicTimesF_real.at(std::make_pair(theta, phi)));
       }
       valuesToIntegrate.emplace_back(milnes_rule(valuesAtThisTheta, 0, M_PI));
     }
 
-    double cn = milnes_rule(valuesToIntegrate, 0, 2*M_PI);
+    double cn_real = milnes_rule(valuesToIntegrate, 0, 2*M_PI);
+
+    // integrate again over imaginary part
+    auto valuesToIntegrate_imag = std::vector<double>();
+    for (const auto& theta : sphere.theta) {
+      auto valuesAtThisTheta_imag = std::vector<double>();
+      for (const auto& phi : sphere.phi) {
+        valuesAtThisTheta_imag.emplace_back(sphericalHarmonicTimesF_imag.at(std::make_pair(theta, phi)));
+      }
+      valuesToIntegrate_imag.emplace_back(milnes_rule(valuesAtThisTheta_imag, 0, M_PI));
+    }
+
+    double cn_imag = milnes_rule(valuesToIntegrate_imag, 0, 2*M_PI);
 
     for (const auto& theta : sphere.theta) {
       for (const auto& phi : sphere.phi) {
         auto thetaPhi = std::make_pair(theta, phi);
 
         if (fourierSphereData_real.values.find(thetaPhi) != fourierSphereData_real.values.end()) {
-          fourierSphereData_real.values[thetaPhi] += cn * sphericalHarmonicTimesF_real.at(thetaPhi);
+          fourierSphereData_real.values[thetaPhi] += cn_real * sphericalHarmonicTimesF_real.at(thetaPhi);
+          fourierSphereData_imag.values[thetaPhi] += cn_imag * sphericalHarmonicTimesF_imag.at(thetaPhi);
         } else {
-          fourierSphereData_real.values.insert({thetaPhi, cn * sphericalHarmonicTimesF_real.at(thetaPhi)});
+          fourierSphereData_real.values.insert({thetaPhi, cn_real * sphericalHarmonicTimesF_real.at(thetaPhi)});
+          fourierSphereData_imag.values.insert({thetaPhi, cn_imag * sphericalHarmonicTimesF_imag.at(thetaPhi)});
         }
       }
     }
   }
 
-  return fourierSphereData_real;
+  return std::make_pair(fourierSphereData_real, fourierSphereData_imag);
 }

@@ -3,7 +3,6 @@
 
 #define _USE_MATH_DEFINES
 
-// TODO: alphabetize (maybe)
 #include <memory>
 #include <iostream>
 #include <string>
@@ -67,7 +66,7 @@ Location DetermineShapeLocation(int argc, char *argv[], int& counter, int& seed)
     if (counter == argc || IsStringAShape(argv[counter])) {
       // if the next line is a shape, that means a location wasn't specified for this shape. Randomly generate a location 
       std::mt19937 gen(seed);
-      std::uniform_real_distribution<double> distribution(-2.0*radius, 2.0*radius); // TODO: must be greater than radius of sphere, but figure out waht the right thing to do here is
+      std::uniform_real_distribution<double> distribution(-2.0*radius, 2.0*radius);
 
 
       x = distribution(gen);
@@ -100,7 +99,7 @@ Location DetermineShapeLocation(int argc, char *argv[], int& counter, int& seed)
         std::cerr << "Given x: " << x << std::endl;
         std::cerr << "Given y: " << y << std::endl;
         std::cerr << "Given z: " << z << std::endl;
-        std::cerr << "Radius of Circle: " << radius << std::endl;
+        std::cerr << "Radius of Sphere: " << radius << std::endl;
         throw std::runtime_error("Given center of shape would cause the shape to be inside the sphere. The center of the shape must be greater than the radius of the sphere\n");
       }
 
@@ -131,7 +130,13 @@ RuntimeArguments ParseRuntimeArguments(int argc, char *argv[]) {
   if (argc == 2) {
     throw std::runtime_error("Additional runtime argument needed: need l value to evaluate fourier transform! If we are not doing the fourier transform, then this value is not used, but still needs to have a valid input");
   }
-  int l = std::stoi(argv[2]);
+
+  int l;
+  try{
+    l = std::stoi(argv[2]);
+  } catch (std::exception& e) {
+    throw std::runtime_error("The second argument is the l value used to do the fourier transform, but the argument received could not be converted to an integer");
+  }
 
   if (argc == 3) {
     throw std::runtime_error("Additional runtime argument needed: folder where outputs will be stored!");
@@ -141,7 +146,12 @@ RuntimeArguments ParseRuntimeArguments(int argc, char *argv[]) {
   if (argc == 4) {
     throw std::runtime_error("Additional runtime argument needed: Give a seed!");
   }
-  int seed = std::stoi(std::string(argv[4]));
+  int seed;
+  try{
+    seed = std::stoi(argv[4]);
+  } catch (std::exception& e) {
+    throw std::runtime_error("The second argument is the l value used to do the fourier transform, but the argument received could not be converted to an integer");
+  }
 
   std::vector<Shape> shapes = std::vector<Shape>();
   if (argc <= 5) {
@@ -150,13 +160,7 @@ RuntimeArguments ParseRuntimeArguments(int argc, char *argv[]) {
     int counter = 5;
     while (counter < argc) {
       std::string new_shape = argv[counter];
-      if (new_shape == "circle") {
-        auto circleData = std::make_shared<CircleData>(std::stod(argv[counter+1]));
-        counter += 2;
-        auto shapeLocation = DetermineShapeLocation(argc, argv, counter, seed);
-        shapes.emplace_back(Shape(ShapeType::Circle, shapeLocation, std::dynamic_pointer_cast<ShapeData>(circleData)));
-      }
-      else if (new_shape == "square") {
+      if (new_shape == "square") {
         auto squareData = std::make_shared<SquareData>(std::stod(argv[counter+1]));
         counter += 2;
         auto shapeLocation = DetermineShapeLocation(argc, argv, counter, seed);
@@ -182,7 +186,7 @@ std::map<std::pair<double, double>, double> ProjectShapeOntoSphereAndCalculateDi
   const std::vector<double>& phi_sphere,
   const std::vector<double>& x_shape,
   const std::vector<double>& y_shape,
-  const std::vector<double>& z_shape, // TODO: would like to not iterate over all 3 vectors - only 2 is necessary due to planar assumption that the code makes prior
+  const std::vector<double>& z_shape,
   const Location& shape_center,
   double theta_step,
   double phi_step
@@ -194,13 +198,14 @@ std::map<std::pair<double, double>, double> ProjectShapeOntoSphereAndCalculateDi
 
   double farthestLocationFromCenterPoint = CalculateDistanceFromCenterToFarthestPoint(x_shape, y_shape, z_shape, r, shape_center);
 
-  // TODO: inefficient as all fuck, but it works for all shape types. revisit if time
-  std::map<std::pair<double, double>, double> values_beforepruning; // TODO: better name
+  std::map<std::pair<double, double>, double> values_beforepruning;
   for (double x : x_shape) {
     for (double y : y_shape) {
       for (double z : z_shape) {
 
-        // TODO: say it's smoothing
+        // The fourier transform has a harder time fitting to 'edges' rather than smoothed objects, 
+        //  so we apply smoothing to the values,
+        //  where the 'value' of an individual location decreasing the further away from the center of the shape
         double magnitude = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 
         double x_norm = x/magnitude * r;
@@ -208,7 +213,7 @@ std::map<std::pair<double, double>, double> ProjectShapeOntoSphereAndCalculateDi
         double z_norm = z/magnitude * r;
 
         double distanceFromPointToCenter = sqrt(pow(x_norm - center_x_normalized, 2) + pow(y_norm - center_y_normalized, 2) + pow(z_norm - center_z_normalized, 2));
-        double value = 1-distanceFromPointToCenter/farthestLocationFromCenterPoint;  // TODO: better name
+        double value = 1-distanceFromPointToCenter/farthestLocationFromCenterPoint;
 
         double theta = atan2(y_norm, x_norm);
         // We choose to use 0 <= theta <= 2pi, while atan2 uses -pi < theta < pi. 
@@ -264,8 +269,6 @@ SphereData CreateSphereFromShapes(const std::vector<Shape>& shapes) {
   auto theta_sphere = std::vector<double>();
   auto phi_sphere = std::vector<double>();
 
-  // TODO: comments!
-
   // Map that links theta/phi locations to a value
   auto values_map = std::map<std::pair<double, double>, double>();
 
@@ -280,9 +283,7 @@ SphereData CreateSphereFromShapes(const std::vector<Shape>& shapes) {
 
   // Place shapes onto sphere
   for (const auto& shape : shapes) {
-    // TODO: circle and rectangle!
     if (shape.type == ShapeType::Square) {
-      // get angle of square, so that we can determine which points the square covers
       auto squareData = std::dynamic_pointer_cast<SquareData>(shape.data);
       auto sideLength = squareData->side_length;
 
@@ -292,8 +293,8 @@ SphereData CreateSphereFromShapes(const std::vector<Shape>& shapes) {
       auto x = std::vector<double>();
       auto y = std::vector<double>();
       auto z = std::vector<double>();
-      double square_step = 0.1; // arbitrary nu-mber to initialize x/y/z values for the square
-      if (centerOfSquare.x == std::max(centerOfSquare.x, std::max(centerOfSquare.y, centerOfSquare.z))){
+      double square_step = 0.1; // arbitrary number to initialize x/y/z values for the square
+      if (centerOfSquare.x == std::max(centerOfSquare.x, std::max(centerOfSquare.y, centerOfSquare.z))) {
         for (double y_inc = centerOfSquare.y - sideLength/2; y_inc < centerOfSquare.y + sideLength/2; y_inc +=square_step) {
           y.emplace_back(y_inc);
         }
@@ -320,8 +321,47 @@ SphereData CreateSphereFromShapes(const std::vector<Shape>& shapes) {
         }
         z = std::vector<double>(x.size(), centerOfSquare.z);
       }
+    } else if (shape.type == ShapeType::Rectangle) {
+      auto rectangleData = std::dynamic_pointer_cast<RectangleData>(shape.data);
+      auto length = rectangleData->length;
+      auto width = rectangleData->width;
 
-      // TODO: that's a long name
+      auto centerOfRectangle = shape.location;
+      auto x = std::vector<double>();
+      auto y = std::vector<double>();
+      auto z = std::vector<double>();
+      double square_step = 0.1; // arbitrary number to initialize x/y/z values for the square
+      if (centerOfRectangle.x == std::max(centerOfRectangle.x, std::max(centerOfRectangle.y, centerOfRectangle.z))){
+        for (double y_inc = centerOfRectangle.y - length/2; y_inc < centerOfRectangle.y + length/2; y_inc +=square_step) {
+          y.emplace_back(y_inc);
+        }
+        for (double z_inc = centerOfRectangle.z - width/2; z_inc < centerOfRectangle.z + width/2; z_inc +=square_step) {
+          z.emplace_back(z_inc);
+        }
+        x = std::vector<double>(y.size(), centerOfRectangle.x);
+
+      } else if (centerOfRectangle.y == std::max(centerOfRectangle.x, std::max(centerOfRectangle.y, centerOfRectangle.z))) {
+        for (double x_inc = centerOfRectangle.x - length/2; x_inc < centerOfRectangle.x + length/2; x_inc +=square_step) {
+          x.emplace_back(x_inc);
+        }
+        for (double z_inc = centerOfRectangle.z - width/2; z_inc < centerOfRectangle.z + width/2; z_inc +=square_step) {
+          z.emplace_back(z_inc);
+        }
+        y = std::vector<double>(x.size(), centerOfRectangle.y);
+
+      } else if (centerOfRectangle.z == std::max(centerOfRectangle.x, std::max(centerOfRectangle.y, centerOfRectangle.z))) {
+        for (double x_inc = centerOfRectangle.x - length/2; x_inc < centerOfRectangle.x + length/2; x_inc +=square_step) {
+          x.emplace_back(x_inc);
+        }
+        for (double y_inc = centerOfRectangle.y - width/2; y_inc < centerOfRectangle.y + width/2; y_inc +=square_step) {
+          y.emplace_back(y_inc);
+        }
+        z = std::vector<double>(x.size(), centerOfRectangle.z);
+      }
+      else {
+        throw std::runtime_error("Projection for this shape type has not been implemented");
+      }
+
       auto mapOfNewValues = ProjectShapeOntoSphereAndCalculateDistanceFromCenterOfShape(
         r, 
         theta_sphere, 
@@ -385,8 +425,6 @@ void OutputSphereToFile(const SphereData& sphereData, const std::string& outputF
 
 
 int main(int argc, char *argv[]) {
-  // TODO: check at read time to see if given theta/phi locations are valid
-
   // read command line arguments, which contain the information needed to initialize the desired code
   if (std::string(argv[1]) == "ExecuteTests") {
     ExecuteTests();
@@ -394,7 +432,6 @@ int main(int argc, char *argv[]) {
   } else {
     auto run_specifications = ParseRuntimeArguments(argc, argv);
 
-    // TODO: using shape data from runtime arguments, create a lattice that represents theta and phi of the sphere. 
     //  The map from this function uses a key as a theta/phi location, and the value is the value from the 
     auto plotted_sphere = CreateSphereFromShapes(run_specifications.shapes);
 
@@ -404,7 +441,8 @@ int main(int argc, char *argv[]) {
     if (run_specifications.runFourier == true) {
       auto sphere_fourierTransformed = CalculateFourierTransformOfSphere(plotted_sphere, run_specifications.l);
 
-      OutputSphereToFile(sphere_fourierTransformed, run_specifications.outputPath + "/SphereData_postFourierTransform.csv");
+      OutputSphereToFile(sphere_fourierTransformed.first, run_specifications.outputPath + "/SphereData_postFourierTransform_real.csv");
+      OutputSphereToFile(sphere_fourierTransformed.second, run_specifications.outputPath + "/SphereData_postFourierTransform_imag.csv");
     }
 
     std::cout << "Run Completed Successfully" << std::endl;

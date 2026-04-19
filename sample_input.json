@@ -1,5 +1,4 @@
 {
-  "output-filepath": "sample_SH_output.csv",
   "do-fourier": true,
   "l": 2,
   "seed": 1234,
