@@ -16,7 +16,7 @@
 #include <fstream>
 
 #include "Shapes.h"
-#include "Tests.cpp"
+#include "Tests.h"
 #include "FourierTransformCalculator.h"
 #include "SphereData.h"
 
